@@ -712,7 +712,9 @@ Ext.onReady(function () {
 
         return def;
     }
-
+    loadPlugin('smartR', "/SmartR/loadScripts", function () {
+        resultsTabPanel.add(smartRPanel);
+    });
     // DALLIANCE
     // =======
     loadPlugin('dalliance-plugin', "/Dalliance/loadScripts", function () {
@@ -3818,6 +3820,3 @@ function contains(a, obj) {
 }
 
 
-loadPlugin('smartR', "/SmartR/loadScripts", function () {
-    resultsTabPanel.add(smartRPanel);
-})
