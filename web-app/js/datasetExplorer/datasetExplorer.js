@@ -3816,3 +3816,8 @@ function contains(a, obj) {
     }
     return false;
 }
+
+
+loadPlugin('smartR', "/SmartR/loadScripts", function () {
+    resultsTabPanel.add(smartRPanel);
+})
