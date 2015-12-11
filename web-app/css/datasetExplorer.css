@@ -380,7 +380,8 @@ table.tablesorterAnalysisResults thead tr .header {
 	background-repeat: no-repeat;
 	background-position: center right;
 	cursor: pointer;
-	white-space: nowrap;	
+	white-space: nowrap;
+	padding-right: 20px; /* avoid background image on top of text */
 }
 table.tablesorterAnalysisResults tbody td {
 	color: #3D3D3D;
