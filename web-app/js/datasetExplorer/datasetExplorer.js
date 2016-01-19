@@ -699,22 +699,44 @@ Ext.onReady(function () {
 
     function loadPlugin(pluginName, scriptsUrl, bootstrap) {
         var def = jQuery.Deferred();
-        jQuery.post(pageInfo.basePath + "/pluginDetector/checkPlugin", {pluginName: pluginName}, function(data) {
-            if (data === 'true') {
+        var loadResources = function () {
                 loadResourcesByUrl(pageInfo.basePath + scriptsUrl, function() {
                     bootstrap();
                     def.resolve();
                 }).fail(def.reject);
+        };
+        if (pluginName) {
+            jQuery.post(pageInfo.basePath + "/pluginDetector/checkPlugin", {pluginName: pluginName}, function (data) {
+                if (data === 'true') {
+                    loadResources();
             } else {
                 def.reject();
             }
         }).fail(def.reject);
+        } else {
+            loadResources();
+        }
 
         return def;
     }
+
+    // smartR -- to be ported to extension mechanism
     loadPlugin('smartR', "/SmartR/loadScripts", function () {
         resultsTabPanel.add(smartRPanel);
     });
+
+    function loadAnalysisTabExtensions(currentIndex) {
+        if (currentIndex >= GLOBAL.analysisTabExtensions.length) {
+            return;
+        }
+        var tabExtension = GLOBAL.analysisTabExtensions[currentIndex];
+        loadPlugin(null, tabExtension.resourcesUrl, function () {
+            (window[tabExtension.bootstrapFunction])(resultsTabPanel, tabExtension.config);
+        }).always(function () {
+            loadAnalysisTabExtensions(currentIndex + 1);
+        });
+    }
+
     // DALLIANCE
     // =======
     loadPlugin('dalliance-plugin', "/Dalliance/loadScripts", function () {
@@ -724,7 +746,11 @@ Ext.onReady(function () {
         if (GLOBAL.metacoreAnalyticsEnabled) {
             loadPlugin('transmart-metacore-plugin', "/MetacoreEnrichment/loadScripts", function () {
                 loadMetaCoreEnrichment(resultsTabPanel);
+            }).always(function () {
+                loadAnalysisTabExtensions(0);
             });
+        } else {
+            loadAnalysisTabExtensions(0);
         }
     });
 
